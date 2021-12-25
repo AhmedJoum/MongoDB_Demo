@@ -1,6 +1,4 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
-
+﻿
 using System;
 
 namespace MongoDB_Demo
@@ -10,43 +8,34 @@ namespace MongoDB_Demo
         static void Main(string[] args)
         {
             MongoCRUD db = new MongoCRUD("AddressBook");
-            db.InsertRecord("Users", new PersonModel { FirstName="Ahmed", LastName="Hassan"});
-            Console.WriteLine("Hello World!");
-        }
-    }
+            //db.InsertRecord("Users", new PersonModel
+            //{
+            //    FirstName = "Hussam",
+            //    LastName = "Hassan", 
+            //    PrimaryAddress = new AddressModel
+            //    {
+            //        City =  "Kahrtoum", 
+            //        PostalCode =    "1111", 
+            //        State = "Khrtoum", 
+            //        StreetAddress = "...",
+            //    }
+            //});
 
-    public class PersonModel
-    {
-        [BsonId]
-        public Guid Id { get; set; }
-        public string FirstName{ get; set; }
-        public string LastName { get; set; }
-        public AddressModel PrimaryAddress { get; set; }
+            var recs = db.LoadRecords<NameModel>("Users");
 
-    }
+            foreach (var rec in recs)
+            {
+                Console.WriteLine($" {rec.FirstName} {rec.LastName}");
+                // Console.WriteLine($"{rec.PrimaryAddress?.City}");
+            }
 
-    public class AddressModel
-    {
-        public string StreetAddress { get; set; }
-        public string City { get; set; }
-        public string PostalCode { get; set; }
-        public string State { get; set; }
-    }
+            //var oneRec = db.LoadRecordById<PersonModel>("Users", new Guid("8fe354a3-2970-40f5-9343-1411e75ccf8d"));
+            //oneRec.DateOfBirth = new DateTime(1982, 10, 31, 0,0,0, DateTimeKind.Utc);
+            //db.UpsertRecord<PersonModel>("Users", oneRec.Id, oneRec);
 
-    public class MongoCRUD
-    {
-        readonly IMongoDatabase db;
+            //db.DeleteRecord<PersonModel>("Users", oneRec.Id);
 
-        public MongoCRUD(string database)
-        {
-            var client = new MongoClient();
-            db = client.GetDatabase(database);
-        }
-
-        public void InsertRecord<T>(string table, T record)
-        {
-            var collection = db.GetCollection<T>(table);
-            collection.InsertOne(record);
+            Console.WriteLine();
 
         }
     }
